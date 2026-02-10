@@ -2,9 +2,9 @@ from src.extensions import db
 
 class Borrow(db.Model):
     """
-    Represents a borrowing transaction.
+    Represents a borrowing transaction between a user and item.
     
-    Tracks the complete lifecycle: request → approval → checkout → return.
+    Tracks the complete lifecycle: request -> approval -> checkout -> return.
     
     Status values:
         - 'pending': Request submitted, awaiting owner approval
@@ -17,7 +17,7 @@ class Borrow(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    #links
+    # Links
     item_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=False)
     borrower_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
@@ -33,6 +33,10 @@ class Borrow(db.Model):
 
     created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), onupdate=db.func.now())
+
+    # Relationships
+    item = db.relationship('Item', back_populates='borrows')
+    borrower = db.relationship('User', back_populates='borrows', foreign_keys=[borrower_id])
 
     def __repr__(self):
         return f'<Borrow {self.id}: {self.status}>'

@@ -14,7 +14,7 @@ class Item(db.Model):
     description = db.Column(db.Text, nullable=True)
     category = db.Column(db.String(50), nullable=True, index=True)
 
-    #links
+    # Links
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
 
     # Quantity tracking for identical items
@@ -30,6 +30,10 @@ class Item(db.Model):
         db.CheckConstraint('available_quantity <= total_quantity', name='check_available_lte_total'),
         db.CheckConstraint('total_quantity >= 1', name='check_total_positive'),
     )
+
+    # Relationships
+    owner = db.relationship('User', back_populates='owned_items')
+    borrows = db.relationship('Borrow', back_populates='item')
 
     def __repr__(self):
         return f'<Item {self.name} ({self.available_quantity}/{self.total_quantity} available)>'
